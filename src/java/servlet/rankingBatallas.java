@@ -5,6 +5,7 @@
  */
 package servlet;
 
+import Entity.Battle;
 import Entity.Pokemon;
 import Entity.Trainer;
 import beans.TrainerEJB;
@@ -50,27 +51,27 @@ public class rankingBatallas extends HttpServlet {
             
             
                     
-            List<Pokemon> pok = miEjb.selectPokemonBatallas();
+            List<Battle> bat = miEjb.selectPokemonBatalla();
             
-            for(Pokemon p: pok)
+            for(Battle b: bat) 
             {
           
                    out.println("<table border='1'>");
                 out.println("<tr>");
                 out.println("<th bgcolor='#666666'>");
-                out.println("POKEMON");
+                out.println("POKEMON GANADOR");
                 out.println("</th>");
                 out.println("<th>");
-                out.println("Nº BATALLAS");
+                out.println("VECES GANADAS");
                 out.println("</th>");
                 out.println("</tr>");
 
                 out.println("<tr>");
                 out.println("<th>");
-                out.println(p.getName());
+                out.println(b.getWinner());
                 out.println("</th>");
                 out.println("<th>");
-                out.println(p.getTrainer);
+                out.println(b);
                 out.println("</th>");
 
                 out.println("</th>");

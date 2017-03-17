@@ -5,6 +5,7 @@
  */
 package beans;
 
+import Entity.Battle;
 import Entity.Pokemon;
 import Entity.Trainer;
 import java.util.List;
@@ -57,7 +58,7 @@ public class TrainerEJB {
 
     public List<Pokemon> selectPokemonLevel() {
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery("select p from Pokemon p order by p.level desc");
+        Query q = em.createQuery("select p from Pokemon p order by p.level desc, p.life desc");
         return q.getResultList();
     }
 
@@ -67,11 +68,9 @@ public class TrainerEJB {
         return q.getResultList();
     }
 
-    public List<Pokemon> selectPokemonBatalla() {
-        
-        //BATALLAS
+    public List<Battle> selectPokemonBatalla() {
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery("select p from Pokemon p order by p.batallas desc");
+        Query q = em.createQuery("select b from Battle b group by b.winner order by b.winner desc");
         return q.getResultList();
     }
 
@@ -83,6 +82,18 @@ public class TrainerEJB {
             return true;
         }
         return false;
+    }
+  public boolean buyPotions(String nombre, int potions) {
+        EntityManager em = emf.createEntityManager();
+        Trainer trainer = em.find(Trainer.class, nombre);
+        boolean ok = false;
+        if (trainer != null) {
+            trainer.setPoints(trainer.getPoints()-(potions*10));
+            em.persist(trainer);
+            ok = true;
+        }
+        em.close();
+        return ok;
     }
 
     public List<Pokemon> selectPokemonTrainer(Trainer t) {

@@ -1,4 +1,4 @@
-/*
+  /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -66,10 +66,6 @@ public class altaPokemon extends HttpServlet {
                 Trainer trainerEscogido = miEjb.getTrainerByNombre(trainer);
                 // Añadimos el entrenador al pokemon
                 pokemon.setTrainer(trainerEscogido);
-                
-                if(pokemon.getTrainer() > 6){
-                    out.println("ERROR");
-                }else
                 if (miEjb.insertarPokemon(pokemon)) {
                     out.println("<p>Pokemon dado de alta</p>");
                 } else {
@@ -92,7 +88,11 @@ public class altaPokemon extends HttpServlet {
                 // Leemos los entrenadores de la base de datos
                 List<Trainer> trainers = miEjb.selectAllTrainers();
                 for (Trainer t : trainers) {
+                    if(t.getPokemonCollection().size() <6){
                     out.println("<option value=\"" + t.getName() + "\">" + t.getName() + "</option>");
+                    }else{
+                        out.println("ERROR");
+                    }
                 }
                 out.println("</select>");
                 

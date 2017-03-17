@@ -9,8 +9,10 @@ import Entity.Trainer;
 import beans.TrainerEJB;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,9 +21,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author dam
  */
-public class NewTrainer extends HttpServlet {
+@WebServlet(name = "getPociones", urlPatterns = {"/getPociones"})
+public class getPociones extends HttpServlet {
+    @EJB
+    TrainerEJB miEjb;
 
-    @EJB TrainerEJB miEjb;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,37 +43,38 @@ public class NewTrainer extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NewTrainer</title>");            
+            out.println("<title>Servlet getPociones</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewTrainer at " + request.getContextPath() + "</h1>");
-            // Comprobamos si han pulsado el botón
-            if ("Guardar".equals(request.getParameter("alta"))) {
-                // Tenemos que crear el camión
-                String nombre = request.getParameter("nombre");
-
-                int potions = Integer.parseInt(request.getParameter("potions"));
-
-                int pokeballs = Integer.parseInt(request.getParameter("pokeballs"));
-
-
-                Trainer trainer = new Trainer(nombre, pokeballs, potions, 0);
-
-                if (miEjb.insertarTrainer(trainer)) {
-                    out.println("<p>Trainer dado de alta</p>");
-                } else {
-                    out.println("<p>Ya existe un trainer con ese nombre</p>");
+            out.println("<h1>Servlet getPociones at " + request.getContextPath() + "</h1>");
+            
+            if("Buy".equals(request.getParameter("buying"))){
+                String name = request.getParameter("trainer");
+                int npotions = Integer.parseInt(request.getParameter("potions"));
+                Trainer trainer = miEjb.getTrainerByNombre(name);
+                
+                if(trainer.getPoints() > (npotions) * 10){
+                    miEjb.buyPotions(name, npotions);
+                    out.println("Comprada");
+                }else{
+                    out.println("NO POINTS");
                 }
-                out.println("<p><a href=\"index.html\">Volver al menú principal</a></p>");
-            } else {
-
+            }else{
                 out.println("<form method=\"POST\">");
-                out.println("Nombre: <input type=\"text\" name=\"nombre\">");
-                out.println("Potions: <input type=\"number\" name=\"potions\">");
-                out.println("Pokeballs: <input type=\"number\" name=\"pokeballs\">");
-                out.println("<input type=\"submit\" name=\"alta\" value=\"Guardar\">");
-                out.println("</form>");
+
+            out.println("Trainer: <select name=\"trainer\">");
+
+            List<Trainer> trainers = miEjb.selectAllTrainers();
+            for (Trainer t : trainers) {
+                out.println("<option value=\"" + t.getName() + "\">" + t.getName() + "</option>");
             }
+
+            out.println("</select>");
+            out.println("<input type=\"number\" name=\"potions\">");
+            out.println("<input type=\"submit\" name=\"buying\" value=\"Buy\">");
+            out.println("</form>");
+            }
+
             out.println("</body>");
             out.println("</html>");
         }
